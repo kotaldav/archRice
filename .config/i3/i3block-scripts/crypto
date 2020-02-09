@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+import json
+import requests
+import os
+import sys
+
+#PRICE_CHANGE_PERIOD = os.environ['PRICE_PERIOD'] # Available: '1h', '24h', '7d
+#PRICE_CHANGE_URGENT_PERCENT = 10
+
+API_URL = 'https://api.coinmarketcap.com/v1/ticker/{}/?convert=czk' # CoinMarketCap API
+coin = os.environ.get('BLOCK_INSTANCE', 'bitcoin')
+r = requests.get(API_URL.format(coin))
+data = json.loads(r.text)[0]
+
+price = float(data['price_czk'])
+change_1h = float(data['percent_change_1h'])
+change_7d = float(data['percent_change_7d'])
+
+change_1h_format = '<span color="{}">{}{:.2f}%</span>'
+if   change_1h > 0:  change_1h_info = change_1h_format.format('#3BB92D', '↑', change_1h)
+elif change_1h == 0: change_1h_info = change_1h_format.format('#CCCCCC', '', change_1h)
+else               : change_1h_info = change_1h_format.format('#F7555E', '↓', change_1h)
+
+change_7d_format = '<span color="{}">{}{:.2f}%</span>'
+if   change_7d > 0:  change_7d_info = change_7d_format.format('#3BB92D', '↑', change_7d)
+elif change_7d == 0: change_7d_info = change_7d_format.format('#CCCCCC', '', change_7d)
+else               : change_7d_info = change_7d_format.format('#F7555E', '↓', change_7d)
+
+precision = 0
+
+print(('{} {:.' + str(precision) + 'f} 1h {} 7d {}').format(data['symbol'], price, change_1h_info, change_7d_info)) # Full Text
+
+"""
+percentChange = float(data['percent_change_' + PRICE_CHANGE_PERIOD])
+percentChangeFormat = '<span color="{}">{}{:.2f}%</span>'
+if percentChange > 0: percentChangeInfo = percentChangeFormat.format('#3BB92D', '', percentChange)
+elif percentChange == 0: percentChangeInfo = percentChangeFormat.format('#CCCCCC', '', percentChange)
+else: percentChangeInfo = percentChangeFormat.format('#F7555E', '', percentChange)
+
+print(('{} {:.' + str(precision) + 'f} {}').format(data['symbol'], price, percentChangeInfo)) # Full Text
+print(('{} {:.' + str(precision) + 'f}').format(data['symbol'], price)) # Short Text
+
+if percentChange > PRICE_CHANGE_URGENT_PERCENT:
+    exit(33)
+"""

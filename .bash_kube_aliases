@@ -1,0 +1,31 @@
+#kubectl shortcut
+alias k='kubectl'
+
+#list resources
+alias kp='kubectl get pods'
+alias ks='kubectl get services'
+alias kd='kubectl get deployments'
+alias kn='kubectl get namespaces'
+alias kpa='kubectl get pods --all-namespaces'
+alias kpo='kubectl get pods -o wide'
+alias kpos='kubectl get pods -o wide | sort -k 7'
+alias kpao='kubectl get pods -o wide --all-namespaces'
+alias kpaos='kubectl get pods -o wide --all-namespaces | sort -k 8'
+
+#describe resources
+alias kdp='kubectl describe pod'
+alias kds='kubectl describe service'
+alias kdd='kubectl describe deployment'
+alias kdn='kubectl describe node'
+alias kdpp='function _kdpp(){ kubectl describe pod $(kubectl get pods --selector=app=$1 --output=json | jq -r .items[0].metadata.name) bash; };_kdpp'
+
+#kubec config
+alias kc='kubectl config'
+
+#switch namespace
+alias ksc='function _ksc(){ kubectl config set-context `kubectl config current-context` --namespace=$1; };_ksc'
+
+#exec with bash into pod
+alias kb='function _kb(){ kubectl exec -it $1 bash; };_kb'
+alias kbb='function _kbb(){ kubectl exec -it $(kubectl get pods --selector=app=$1 --output=json | jq -r .items[0].metadata.name) $([[ "$2" ]] && printf " --namespace=$2 ") bash; };_kbb'
+
